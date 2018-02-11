@@ -8,6 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/Peeja/inline-twitch-images/master/inline-twitch-images.js
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @require     https://gist.github.com/raw/2625891/waitForKeyElements.js
+// @require     https://raw.githubusercontent.com/bryanwoods/autolink-js/master/autolink-min.js
 // ==/UserScript==
 
 /* eslint-env browser */
@@ -15,18 +16,30 @@
 
 waitForKeyElements("#root", watchChat);
 
-function watchChat() {
-  // The node to be monitored
-  var target = $("#root")[0];
+function watchChat($target) {
   // Create an observer instance
   var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
       var newNodes = mutation.addedNodes; // DOM NodeList
       if (newNodes !== null) {
-        var selector = ".chat-line__message--link";
+        var messageSelector = ".video-chat__message";
+        var $messages = $(newNodes)
+          .find(messageSelector)
+          .addBack(messageSelector);
+        $messages.each(function() {
+          if (!this.querySelector(".chat-line__message--emote")) {
+            $(this).html(
+              $(this)
+                .html()
+                .autoLink({ class: "chat-line__message--link" })
+            );
+          }
+        });
+
+        var linkSelector = ".chat-line__message--link";
         var $links = $(newNodes)
-          .find(selector)
-          .addBack(selector);
+          .find(linkSelector)
+          .addBack(linkSelector);
         $links.each(function() {
           var re = /(.*(?:jpg|png|gif))$/gm;
           if (re.test($(this).text())) {
@@ -46,5 +59,5 @@ function watchChat() {
   };
 
   // Pass in the target node, as well as the observer options
-  observer.observe(target, config);
+  observer.observe($target.get(0), config);
 }
