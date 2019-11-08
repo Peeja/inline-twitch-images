@@ -3,7 +3,7 @@
 // @namespace   http://inline-twitch-images.peeja.com
 // @description Inlines images linked from Twitch chat
 // @match       https://www.twitch.tv/*
-// @version     0.0.1
+// @version     0.2.0
 // @updateURL   https://raw.githubusercontent.com/Peeja/inline-twitch-images/master/inline-twitch-images.js
 // @downloadURL https://raw.githubusercontent.com/Peeja/inline-twitch-images/master/inline-twitch-images.js
 // @require     https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
@@ -22,21 +22,7 @@ function watchChat($target) {
     mutations.forEach(function(mutation) {
       var newNodes = mutation.addedNodes; // DOM NodeList
       if (newNodes !== null) {
-        var messageSelector = ".video-chat__message";
-        var $messages = $(newNodes)
-          .find(messageSelector)
-          .addBack(messageSelector);
-        $messages.each(function() {
-          if (!this.querySelector(".chat-line__message--emote")) {
-            $(this).html(
-              $(this)
-                .html()
-                .autoLink({ class: "chat-line__message--link" })
-            );
-          }
-        });
-
-        var linkSelector = ".chat-line__message--link";
+        var linkSelector = ".tw-link";
         var $links = $(newNodes)
           .find(linkSelector)
           .addBack(linkSelector);
